@@ -32,7 +32,7 @@ fn handle_request(req: Request, res: Response) {
                 Ok(file) => res.send(file.as_bytes()).unwrap(),
                 Err(error) => res.send(error.to_string().as_bytes()).unwrap(),
             }
-        },
+        }
         _ => {
             println!("Not supported"); //*res.status_mut() = StatusCode::MethodNotAllowed
             res.send("Operation not supported".as_bytes()).unwrap();
@@ -41,5 +41,5 @@ fn handle_request(req: Request, res: Response) {
 }
 
 fn main() {
-    Server::http("0.0.0.0:8888").unwrap().handle(handle_request).unwrap();
+    Server::http("127.0.0.1:8888").unwrap().handle(handle_request).unwrap();
 }
