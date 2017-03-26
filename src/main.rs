@@ -1,7 +1,6 @@
 extern crate hyper;
 
 use hyper::server::{Server, Request, Response};
-use hyper::status::StatusCode;
 use hyper::uri::RequestUri;
 use std::io;
 use std::io::prelude::*;

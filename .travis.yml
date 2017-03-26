@@ -1,79 +1,45 @@
-# Based on the "trust" template v0.1.1
-# https://github.com/japaric/trust/tree/v0.1.1
-
 dist: trusty
 language: rust
 services: docker
 sudo: required
-
-# TODO Rust builds on stable by default, this can be
-# overridden on a case by case basis down below.
-# rust: stable not specified in order to avoid making
-# a default job.
-
 env:
   global:
-    # TODO Update this to match the name of your project.
-    - CRATE_NAME=file_http_server
-
+  - CRATE_NAME=file_http_server
+  - secure: dFxPISQiyb0G6HwgFWF/D3lgS0JQFvNXjjTwHlrXLpQHfRMFn0Vo54ZHR18mCdV5u7jR29JNVKOLUUWad4IpDfGveM0UIC5tENeZ1v50l2pHnI8ntUCisphsvP5LgXAdjWHMEwdpqtb3oOj8lUrYrvRHIIGE2Cm5XanhgI+M+U+4NGtdI24Y96jHbghmYyA4k45owmK+b6yLGELvFl2v3iRN8LPi66gwcB8AOuTZMzJwHktd3/NohMnjfmp4NRJEG+4//IXsWjAcadp6jd7QeMf6qgF4DHyPjIsWqC9Shvi/7O0Tv4Ku57YrFnFqPvoo2NGPpkamcVc3Bx80CiE1OkLbF479KdhSkmUPE4HyB4DLq4NG7iEnz7brn/T1L5gZZ9gR2h4JDg8rJo17Vj/Q+U2uMSeAvV3tr8GSip8V1gkKBsGmMghxeYExRl90hSW1EWWdOHNngeT3RNQn+boAdv6faeKmoGS7qRm7ZEKWsYRzkguscBuVhSzo5syN2ITA0RA4Mc3kPesHGus1BvdXGNiuJpLpMa5wKf1lesCLJcT1tHhlg7mY480J7xxroa60MsZS4ZYvNgH9a9Xg9ARgXm1N5j5ZKxW0p/o2XnGx/PGpYSRJPpVY/LXqs0+zHzAZ7ApS5+f/BsclYGqvUxMPreol3ZDWxljyH1TE4u9OO0M=
 matrix:
-  # TODO These are all the build jobs. Adjust as necessary. Comment out what you
-  # don't need
   include:
-    # Linux
-    - env: TARGET=i686-unknown-linux-gnu
-    - env: TARGET=x86_64-unknown-linux-gnu
-
-    # OSX
-    - env: TARGET=i686-apple-darwin
-      os: osx
-    - env: TARGET=x86_64-apple-darwin
-      os: osx
-
+  - env: TARGET=i686-unknown-linux-gnu
+  - env: TARGET=x86_64-unknown-linux-gnu
+  - env: TARGET=i686-apple-darwin
+    os: osx
+  - env: TARGET=x86_64-apple-darwin
+    os: osx
 before_install: set -e
-
 install:
-  - sh ci/install.sh
-  - source ~/.cargo/env || true
-
+- sh ci/install.sh
+- source ~/.cargo/env || true
 script:
-  - bash ci/script.sh
-
+- bash ci/script.sh
 after_script: set +e
-
 before_deploy:
-  - sh ci/before_deploy.sh
-
+- sh ci/before_deploy.sh
 deploy:
-  # TODO update `api_key.secure`
-  # - Create a `public_repo` GitHub token. Go to: https://github.com/settings/tokens/new
-  # - Encrypt it: `travis encrypt YOUR_TOKEN`
-  # - Paste the output down here
   api_key:
     secure: A9v3PIzQQ4U08OHFmDPQzNXbNHEb7YHyLXCvMF+dXFuNSvhUNlmQYykxqUf3dvikhJL2/bsZ14umm7ni7fQh0tGwJ4+lPpNzYAcweGgNXnWvjTpY6ovuRbr3gs4/srkyxp/GBDmSW5L8wFN3hKCB+Lm0YnIPB9IA2afP8a30+8VTXT9nv7pNqGny4ilN41ycr4DZi3sQoXdbruy7ClN7gsWW/GUiudBccHVIjmTapOFKLwZHODaUl/1/RDWQzh+i+17e1ivXuJPktDSrqmHPTZ15OjklnHKd6t179ry6VkGRg4R/R/YukVIqGzeaXGWAwdAQ5gE8cjGZghJLVi2jkDBJ85z8MvT+zLZLyliiuhLc/X8y7mkE1n0FKFtXXzFVt0l7V1LaEKbIbiV6XX3jsir4qgkqWjPHBZqO5mkGNFS16Dmt30/ZtEPAzXiINFXbWuWrpQ/LZ4NSto8IMrRTcoyDbAga/KYxJiNIeVuCe1E9dbytDM7K0GLtxJTul/WnnSeI6r//EFyC4bxYjyHhCXaag4q14KM+ak4rB0QgxsYzyGuh2MqyCoVj8YJLjLdKnL/SV7W7LPD40xlxvI6VCYTVi2ILHwL6vCxpukXYteX0c5IAIWkISDKu6nNBEgmCHXXPSqYSrgE5g7/QoCQHI8++nR8iKe0s7TWxZRydby8=
   file_glob: true
-  file: $CRATE_NAME-$TRAVIS_TAG-$TARGET.*
+  file: "$CRATE_NAME-$TRAVIS_TAG-$TARGET.*"
   on:
-    # TODO Here you can pick which targets will generate binary releases
-    # In this example, there are some targets that are tested using the stable
-    # and nightly channels. This condition makes sure there is only one release
-    # for such targets and that's generated using the stable channel
-    condition: $TRAVIS_RUST_VERSION = stable
+    condition: "$TRAVIS_RUST_VERSION = stable"
     tags: true
   provider: releases
   skip_cleanup: true
-
 cache: cargo
 before_cache:
-  # Travis can't cache files that are not readable by "others"
-  - chmod -R a+r $HOME/.cargo
-
+- chmod -R a+r $HOME/.cargo
 branches:
   only:
-    # release tags
-    - /^v\d+\.\d+\.\d+.*$/
-    - master
-
+  - "/^v\\d+\\.\\d+\\.\\d+.*$/"
+  - master
 notifications:
   email:
     on_success: never
