@@ -8,10 +8,7 @@ env:
   - secure: dFxPISQiyb0G6HwgFWF/D3lgS0JQFvNXjjTwHlrXLpQHfRMFn0Vo54ZHR18mCdV5u7jR29JNVKOLUUWad4IpDfGveM0UIC5tENeZ1v50l2pHnI8ntUCisphsvP5LgXAdjWHMEwdpqtb3oOj8lUrYrvRHIIGE2Cm5XanhgI+M+U+4NGtdI24Y96jHbghmYyA4k45owmK+b6yLGELvFl2v3iRN8LPi66gwcB8AOuTZMzJwHktd3/NohMnjfmp4NRJEG+4//IXsWjAcadp6jd7QeMf6qgF4DHyPjIsWqC9Shvi/7O0Tv4Ku57YrFnFqPvoo2NGPpkamcVc3Bx80CiE1OkLbF479KdhSkmUPE4HyB4DLq4NG7iEnz7brn/T1L5gZZ9gR2h4JDg8rJo17Vj/Q+U2uMSeAvV3tr8GSip8V1gkKBsGmMghxeYExRl90hSW1EWWdOHNngeT3RNQn+boAdv6faeKmoGS7qRm7ZEKWsYRzkguscBuVhSzo5syN2ITA0RA4Mc3kPesHGus1BvdXGNiuJpLpMa5wKf1lesCLJcT1tHhlg7mY480J7xxroa60MsZS4ZYvNgH9a9Xg9ARgXm1N5j5ZKxW0p/o2XnGx/PGpYSRJPpVY/LXqs0+zHzAZ7ApS5+f/BsclYGqvUxMPreol3ZDWxljyH1TE4u9OO0M=
 matrix:
   include:
-  - env: TARGET=i686-unknown-linux-gnu
   - env: TARGET=x86_64-unknown-linux-gnu
-  - env: TARGET=i686-apple-darwin
-    os: osx
   - env: TARGET=x86_64-apple-darwin
     os: osx
 before_install: set -e
