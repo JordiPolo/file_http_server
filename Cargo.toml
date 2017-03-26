@@ -1,0 +1,7 @@
+[package]
+name = "file_http_server"
+version = "0.1.0"
+authors = ["Jordi Polo Carres <jcarres@mdsol.com>"]
+
+[dependencies]
+hyper = "0.10"
