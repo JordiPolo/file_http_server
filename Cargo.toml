@@ -5,3 +5,4 @@ authors = ["Jordi Polo Carres <jcarres@mdsol.com>"]
 
 [dependencies]
 hyper = "0.10"
+regex = "0.2"
