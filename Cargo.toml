@@ -4,5 +4,7 @@ version = "0.1.0"
 authors = ["Jordi Polo Carres <jcarres@mdsol.com>"]
 
 [dependencies]
-hyper = "0.10"
+hyper = { git = "https://github.com/hyperium/hyper", branch = "master" }
+# hyper = "0.10"
 regex = "0.2"
+futures = "0.1.11"
