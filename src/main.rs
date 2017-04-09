@@ -1,95 +1,41 @@
 extern crate hyper;
 extern crate futures;
 
-
 // extern crate futures_cpupool;
 use futures::future::FutureResult;
 // use futures_cpupool::CpuPool;
 
 use hyper::server::{Http, Service, Request, Response};
 use hyper::{Get, StatusCode};
-use hyper::header::{ContentLength, ContentType};
+use hyper::header::ContentLength;
+
 use std::time::Instant;
 
-
-//pub mod filename;
-
-
-use hyper::mime::{Mime, TopLevel, SubLevel};
-
-use std::io;
-use std::io::prelude::*;
-use std::fs::File;
-use std::env;
-use std::path::PathBuf;
+pub mod filename;
+pub use filename::Filename;
 
 
-struct Filename {
-    path: PathBuf,
-}
-
-impl Filename {
-    fn from_path(path: &str) -> Self {
-        let mut fullpath = env::current_dir().unwrap();
-        fullpath.push(&path[1..]);
-                println!("Full {:?}", fullpath);
-
-        Self {path: fullpath}
-    }
-
-    fn read_data(&self) -> Result<Vec<u8>, io::Error> {
-        println!("Attemping {:?}", &self.path);
-        let mut f = File::open(&self.path)?;
-        let mut buffer = Vec::new();
-        f.read_to_end(&mut buffer)?;
-        Ok(buffer)
-    }
-
-    fn content_type(&self) -> hyper::header::ContentType {
-        let extension = self.path.extension().map(|extension| extension.to_str().unwrap());
-
-        match extension {
-            Some(extension) => {
-                match extension {
-                    "html" => ContentType::html(),
-                    "css" => ContentType(Mime(TopLevel::Text, SubLevel::Css, vec![])),
-                    "js" => ContentType(Mime(TopLevel::Application, SubLevel::Javascript, vec![])),
-                    "jpg" | "jpeg" => ContentType::jpeg(),
-                    "png" => ContentType::png(),
-                    _ => ContentType::plaintext(),
-                }
-            }
-            None => ContentType::plaintext(),
-
-        }
-    }
-
-}
-
-
-
-
-
-
-
-static INDEX: &'static [u8] = b"For security reasons directories are not listed. Add a filename to the URL.";
+static INDEX: &'static [u8] =
+    b"For security reasons directories are not listed. Add a filename to the URL.";
 static UNIMPLEMENTED: &'static [u8] = b"Operation not implemented";
 
 
 
-
-fn print_elapsed<U, F>(f: F, text: &str) -> U where F: Fn() -> U {
+fn print_elapsed<U, F>(f: F, text: &str) -> U
+    where F: Fn() -> U
+{
     let start = Instant::now();
     let result = f();
     let elapsed = start.elapsed();
-    println!("{}: {} ms", text, (elapsed.as_secs() * 1_000) + (elapsed.subsec_nanos() / 1_000_000) as u64);
+    println!("{}: {} ms",
+             text,
+             (elapsed.as_secs() * 1_000) + (elapsed.subsec_nanos() / 1_000_000) as u64);
     result
 }
 
 
-
 fn serve_file(path: &str) -> Response {
-    let file = print_elapsed(|| Filename::from_path(path), "Elapsed read");
+    let file = Filename::from_path(path);
 
     match file.read_data() {
         Ok(data) => {
@@ -100,7 +46,7 @@ fn serve_file(path: &str) -> Response {
                 .with_header(file.content_type())
         }
         Err(error) => {
-            println!("{:?}", error);
+            println!("Error serving file: {:?}", error);
             Response::new().with_status(StatusCode::NotFound)
         }
 
@@ -108,7 +54,7 @@ fn serve_file(path: &str) -> Response {
 }
 
 struct FileServer; //{
- //   thread_pool: CpuPool,
+//   thread_pool: CpuPool,
 //}
 
 impl Service for FileServer {
@@ -124,9 +70,7 @@ impl Service for FileServer {
                     .with_header(ContentLength(INDEX.len() as u64))
                     .with_body(INDEX)
             }
-            (&Get, path) => {
-                print_elapsed(|| serve_file(path), "Served in")
-            },
+            (&Get, path) => print_elapsed(|| serve_file(path), "Served in"),
             (operation, path) => {
                 println!("Operation {:?} on {:?} not implemented", &operation, &path);
                 Response::new()
@@ -141,13 +85,15 @@ impl Service for FileServer {
 
 fn main() {
     let addr = "127.0.0.1:8888".parse().unwrap();
+    let error_bind = "Port 8888 already in use. Kill other running instances of this program.";
     //let thread_pool = CpuPool::new(10);
 
     let server = Http::new()
-        .bind(&addr,
-              || Ok(FileServer)) //{ thread_pool: thread_pool.clone() }))
-        .expect("Port 8888 already in use. Kill other running instances of this program.");
+        .bind(&addr, || Ok(FileServer)) //{ thread_pool: thread_pool.clone() }))
+        .expect(error_bind);
 
-    println!("Listening on http://{} with 1 thread.", server.local_addr().unwrap());
+    println!("Listening on http://{} with 1 thread.",
+             server.local_addr().unwrap());
+
     server.run().unwrap();
 }
