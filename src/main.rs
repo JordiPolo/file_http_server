@@ -1,5 +1,6 @@
 extern crate hyper;
 extern crate futures;
+extern crate mime_guess;
 
 // extern crate futures_cpupool;
 use futures::future::FutureResult;
@@ -8,6 +9,7 @@ use futures::future::FutureResult;
 use hyper::server::{Http, Service, Request, Response};
 use hyper::{Get, StatusCode};
 use hyper::header::ContentLength;
+use hyper::header::ContentType;
 
 use std::time::Instant;
 
@@ -43,7 +45,7 @@ fn serve_file(path: &str) -> Response {
             Response::new()
                 .with_body(data)
                 .with_header(ContentLength(length as u64))
-                .with_header(file.content_type())
+                .with_header(ContentType(file.content_type()))
         }
         Err(error) => {
             println!("Error serving file: {:?}", error);
